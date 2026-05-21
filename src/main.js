@@ -74,7 +74,7 @@ function buildMenu() {
             title: 'About MI Lottery Analytics',
             message: 'MI Lottery Analytics v1.0.0',
             detail:
-              'Analytics dashboard for Michigan Daily 3 & Daily 4.\n\n' +
+              'Analytics dashboard for Michigan Lottery.\n\n' +
               '⚠️  DISCLAIMER: Lottery draws are random.\n' +
               'This app does NOT guarantee winnings.\n' +
               'For entertainment and statistical exploration only.',
