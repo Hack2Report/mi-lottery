@@ -2,218 +2,130 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;">
 <title>MI Lottery Analytics</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&family=DM+Mono:wght@400;500&display=swap">
 <style>
-  :root {
-    --bg0: #0a0e1a; --bg1: #0f1525; --bg2: #141d30;
-    --bg3: #1a2540; --bg4: #2a3d6b;
-    --brand: #38bdf8; --accent: #f59e0b;
-    --text1: #f1f5f9; --text2: #94a3b8; --text3: #64748b;
-    --border: rgba(148,163,184,.12); --border2: rgba(148,163,184,.22);
-    --radius: 10px; --radius-sm: 6px;
-    --hot: #f97316; --cold: #38bdf8; --neutral: #64748b;
-  }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body {
-    font-family:'DM Sans', system-ui, sans-serif;
-    background:var(--bg0); color:var(--text1);
-    height:100vh; display:flex; flex-direction:column; overflow:hidden;
-    -webkit-font-smoothing:antialiased;
-  }
-
-  /* ── Titlebar ── */
-  .titlebar {
-    height:40px; background:var(--bg1); border-bottom:1px solid var(--border);
-    display:flex; align-items:center; padding:0 16px; gap:12px;
-    -webkit-app-region:drag; user-select:none; flex-shrink:0;
-  }
-  .titlebar-icon { width:18px; height:18px; -webkit-app-region:no-drag; }
-  .titlebar-title { font-size:13px; font-weight:500; color:var(--text2); }
-  .disclaimer-pill {
-    margin-left:auto; font-size:11px;
-    background:rgba(245,158,11,.12); color:var(--accent);
-    border:1px solid rgba(245,158,11,.25);
-    padding:3px 10px; border-radius:20px; -webkit-app-region:no-drag;
-  }
-
-  /* ── Layout ── */
-  .layout { display:flex; flex:1; overflow:hidden; }
-
-  /* ── Sidebar ── */
-  .sidebar {
-    width:200px; background:var(--bg1); border-right:1px solid var(--border);
-    display:flex; flex-direction:column; flex-shrink:0; padding:12px 8px;
-  }
-  .sidebar-section { font-size:10px; font-weight:500; color:var(--text3);
-    text-transform:uppercase; letter-spacing:.08em; padding:8px 10px 4px; }
-  .nav-item {
-    display:flex; align-items:center; gap:10px;
-    padding:8px 10px; border-radius:var(--radius-sm);
-    font-size:13px; color:var(--text2); cursor:pointer;
-    transition:.15s; border:none; background:none; width:100%; text-align:left;
-  }
-  .nav-item:hover { background:var(--bg3); color:var(--text1); }
-  .nav-item.active { background:rgba(56,189,248,.12); color:var(--brand); }
-  .nav-item svg { width:16px; height:16px; flex-shrink:0; }
-  .game-switch {
-    display:flex; gap:4px; padding:8px; background:var(--bg0);
-    border-radius:var(--radius); margin:8px 0;
-  }
-  .gs-btn {
-    flex:1; padding:5px 0; border:none; background:none;
-    border-radius:var(--radius-sm); font-size:12px; font-weight:500;
-    color:var(--text3); cursor:pointer; transition:.15s;
-  }
-  .gs-btn.on {
-    background:var(--bg3); color:var(--brand);
-    box-shadow:inset 0 0 0 1px var(--border2);
-  }
-
-  /* ── Main content ── */
-  .main { flex:1; overflow-y:auto; padding:20px 24px; }
-  .page { display:none; }
-  .page.active { display:block; }
-
-  /* ── Cards ── */
-  .card {
-    background:var(--bg1); border:1px solid var(--border);
-    border-radius:var(--radius); padding:16px 20px; margin-bottom:14px;
-  }
-  .card-title { font-size:12px; color:var(--text3); margin-bottom:12px; font-weight:500; }
-  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
-  .grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-bottom:14px; }
-  .grid4 { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
-
-  /* ── Stat cards ── */
-  .stat {
-    background:var(--bg2); border:1px solid var(--border);
-    border-radius:var(--radius); padding:14px 16px;
-  }
-  .stat-label { font-size:11px; color:var(--text3); margin-bottom:6px; }
-  .stat-val { font-size:22px; font-weight:500; color:var(--text1); }
-  .stat-val.mono { font-family:'DM Mono', monospace; font-size:20px; letter-spacing:3px; }
-
-  /* ── Digit balls ── */
-  .ball {
-    display:inline-flex; align-items:center; justify-content:center;
-    width:36px; height:36px; border-radius:50%;
-    font-size:14px; font-weight:500; border:1px solid; flex-shrink:0;
-  }
-  .ball-hot  { background:rgba(249,115,22,.15); color:#fb923c; border-color:rgba(249,115,22,.3); }
-  .ball-cold { background:rgba(56,189,248,.12); color:var(--brand); border-color:rgba(56,189,248,.25); }
-  .ball-n    { background:var(--bg3); color:var(--text2); border-color:var(--border); }
-  .ball-sm   { width:28px; height:28px; font-size:12px; }
-  .balls-row { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
-
-  /* ── Bar rows ── */
-  .bar-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; font-size:13px; }
-  .bar-track { flex:1; height:5px; background:var(--bg3); border-radius:3px; overflow:hidden; }
-  .bar-fill  { height:100%; border-radius:3px; }
-
-  /* ── Smart picks ── */
-  .pick-row {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:11px 0; border-bottom:1px solid var(--border);
-  }
-  .pick-row:last-child { border-bottom:none; }
-  .conf { font-size:11px; padding:2px 9px; border-radius:12px; font-weight:500; }
-  .conf-hi  { background:rgba(34,197,94,.12); color:#4ade80; }
-  .conf-mid { background:rgba(245,158,11,.12); color:var(--accent); }
-  .conf-lo  { background:rgba(100,116,139,.15); color:var(--text2); }
-
-  /* ── History table ── */
-  .htable { width:100%; border-collapse:collapse; font-size:13px; }
-  .htable th { text-align:left; padding:8px 12px; font-size:11px; font-weight:500;
-    color:var(--text3); border-bottom:1px solid var(--border); text-transform:uppercase; letter-spacing:.06em; }
-  .htable td { padding:9px 12px; border-bottom:1px solid var(--border); }
-  .htable tr:last-child td { border-bottom:none; }
-  .htable tr:hover td { background:var(--bg2); }
-  .badge { font-size:10px; padding:2px 8px; border-radius:10px; font-weight:500; }
-  .badge-mid { background:rgba(245,158,11,.12); color:var(--accent); }
-  .badge-eve { background:rgba(139,92,246,.15); color:#c4b5fd; }
-  .badge-d3  { background:rgba(34,197,94,.1); color:#4ade80; }
-  .badge-d4  { background:rgba(56,189,248,.1); color:var(--brand); }
-
-  /* ── Heatmap ── */
-  .heatmap { display:grid; grid-template-columns:auto repeat(10,1fr); gap:3px; font-size:12px; }
-  .hm-label { display:flex; align-items:center; justify-content:flex-end;
-    padding-right:8px; color:var(--text3); font-size:11px; white-space:nowrap; }
-  .hm-cell {
-    aspect-ratio:1; border-radius:4px; display:flex; align-items:center;
-    justify-content:center; font-size:11px; font-weight:500; transition:.2s;
-  }
-  .hm-header { display:flex; align-items:center; justify-content:center;
-    color:var(--text3); font-size:11px; font-weight:500; }
-
-  /* ── Page header ── */
-  .page-hdr { margin-bottom:20px; }
-  .page-hdr h1 { font-family:'DM Serif Display', serif; font-size:22px; color:var(--text1); margin-bottom:4px; }
-  .page-hdr p  { font-size:13px; color:var(--text3); }
-
-  /* ── Controls ── */
-  .ctrl-row { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
-  .ctrl-label { font-size:13px; color:var(--text2); white-space:nowrap; }
-  input[type=range] {
-    flex:1; height:4px; -webkit-appearance:none; appearance:none;
-    background:var(--bg3); border-radius:2px; outline:none;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance:none; width:16px; height:16px; border-radius:50%;
-    background:var(--brand); cursor:pointer; border:2px solid var(--bg1);
-  }
-  .gen-btn {
-    padding:9px 20px; background:rgba(56,189,248,.1); color:var(--brand);
-    border:1px solid rgba(56,189,248,.25); border-radius:var(--radius);
-    font-size:13px; font-weight:500; cursor:pointer; transition:.15s;
-    display:flex; align-items:center; gap:6px;
-  }
-  .gen-btn:hover { background:rgba(56,189,248,.18); }
-  .export-btn {
-    padding:9px 20px; background:rgba(245,158,11,.1); color:var(--accent);
-    border:1px solid rgba(245,158,11,.25); border-radius:var(--radius);
-    font-size:13px; font-weight:500; cursor:pointer; transition:.15s;
-    display:flex; align-items:center; gap:6px;
-  }
-  .export-btn:hover { background:rgba(245,158,11,.18); }
-
-  /* ── Mode selector ── */
-  .mode-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:14px; }
-  .mode-card {
-    background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius);
-    padding:10px 8px; text-align:center; cursor:pointer; transition:.15s;
-  }
-  .mode-card:hover { border-color:var(--border2); }
-  .mode-card.on { background:rgba(56,189,248,.08); border-color:rgba(56,189,248,.35); }
-  .mode-icon { font-size:20px; margin-bottom:4px; }
-  .mode-name { font-size:11px; font-weight:500; color:var(--text2); }
-
-  /* ── Scrollbar ── */
-  ::-webkit-scrollbar { width:6px; }
-  ::-webkit-scrollbar-track { background:transparent; }
-  ::-webkit-scrollbar-thumb { background:var(--bg4); border-radius:3px; }
-
-  /* ── Toast ── */
-  #toast {
-    position:fixed; bottom:20px; right:20px;
-    background:var(--bg3); border:1px solid var(--border2);
-    color:var(--text1); font-size:13px; padding:10px 16px;
-    border-radius:var(--radius); opacity:0; transition:.3s;
-    pointer-events:none; z-index:999; max-width:300px;
-  }
-  #toast.show { opacity:1; }
+:root{
+  --bg0:#050508;--bg1:#0d0f18;--bg2:#12141f;--bg3:#1a1d2e;--bg4:#252840;
+  --text1:#f0f2ff;--text2:#8b90b8;--text3:#4a4f70;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
+  --radius:10px;--radius-sm:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg0);color:var(--text1);height:100vh;display:flex;flex-direction:column;overflow:hidden;-webkit-font-smoothing:antialiased}
+/* Titlebar */
+.titlebar{height:38px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px;-webkit-app-region:drag;user-select:none;flex-shrink:0}
+.titlebar-logo{width:20px;height:20px;background:linear-gradient(135deg,#7c3aed,#4f46e5);border-radius:5px;display:flex;align-items:center;justify-content:center;-webkit-app-region:no-drag}
+.titlebar-title{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.02em}
+.disclaimer-pill{margin-left:auto;font-size:10px;background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2);padding:2px 10px;border-radius:20px;-webkit-app-region:no-drag}
+/* Layout */
+.layout{display:flex;flex:1;overflow:hidden}
+/* Sidebar */
+.sidebar{width:210px;background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0}
+.sidebar-section{font-size:9px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;padding:14px 12px 5px}
+.game-btn{display:flex;align-items:center;gap:9px;padding:7px 12px;border:none;background:none;width:100%;text-align:left;cursor:pointer;transition:.13s;border-radius:0;border-left:2px solid transparent}
+.game-btn:hover{background:var(--bg3)}
+.game-btn.active{background:rgba(124,58,237,.12);border-left-color:#7c3aed}
+.game-btn .game-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.game-btn .game-name{font-size:12px;color:var(--text2);font-weight:500}
+.game-btn.active .game-name{color:var(--text1)}
+.game-btn .game-type{font-size:9px;color:var(--text3);margin-left:auto}
+/* Main */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+/* Tabs */
+.tabs{display:flex;gap:2px;padding:12px 16px 0;border-bottom:1px solid var(--border);flex-shrink:0}
+.tab{padding:7px 14px;border:none;background:none;font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:.13s;margin-bottom:-1px}
+.tab:hover{color:var(--text2)}
+.tab.active{color:#7c3aed;border-bottom-color:#7c3aed}
+/* Content */
+.content{flex:1;overflow-y:auto;padding:16px}
+.page{display:none}.page.active{display:block}
+/* Game header */
+.game-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px}
+.game-hdr-left h2{font-size:18px;font-weight:600;margin-bottom:3px}
+.game-hdr-left p{font-size:12px;color:var(--text3)}
+.game-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid;white-space:nowrap}
+/* Stat cards */
+.stats-row{display:grid;gap:10px;margin-bottom:14px}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
+.stat-label{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.stat-val{font-size:20px;font-weight:600;color:var(--text1)}
+.stat-val.mono{font-family:'DM Mono',monospace;letter-spacing:2px;font-size:16px}
+/* Cards */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px}
+.card-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+/* Balls */
+.ball{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;font-size:12px;font-weight:600;border:1px solid;flex-shrink:0;font-family:'DM Mono',monospace}
+.ball-hot{background:rgba(239,68,68,.15);color:#f87171;border-color:rgba(239,68,68,.3)}
+.ball-cold{background:rgba(59,130,246,.12);color:#60a5fa;border-color:rgba(59,130,246,.25)}
+.ball-n{background:var(--bg3);color:var(--text2);border-color:var(--border)}
+.ball-special{background:rgba(245,158,11,.15);color:#fbbf24;border-color:rgba(245,158,11,.3)}
+.ball-sm{width:26px;height:26px;font-size:11px}
+.balls-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+/* Bar rows */
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px}
+.bar-track{flex:1;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px}
+/* Picks */
+.pick-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)}
+.pick-row:last-child{border-bottom:none}
+.conf{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+.conf-hi{background:rgba(34,197,94,.12);color:#4ade80}
+.conf-mid{background:rgba(245,158,11,.12);color:#fbbf24}
+.conf-lo{background:rgba(100,116,139,.15);color:var(--text2)}
+/* Controls */
+.ctrl-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.ctrl-label{font-size:12px;color:var(--text2);white-space:nowrap}
+input[type=range]{height:4px;-webkit-appearance:none;appearance:none;background:var(--bg3);border-radius:2px;outline:none;min-width:80px;flex:1}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#7c3aed;cursor:pointer;border:2px solid var(--bg1)}
+.btn{padding:7px 16px;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;transition:.13s;border:1px solid;display:inline-flex;align-items:center;gap:5px}
+.btn-primary{background:rgba(124,58,237,.15);color:#a78bfa;border-color:rgba(124,58,237,.3)}
+.btn-primary:hover{background:rgba(124,58,237,.25)}
+.btn-accent{background:rgba(245,158,11,.1);color:#fbbf24;border-color:rgba(245,158,11,.25)}
+.btn-accent:hover{background:rgba(245,158,11,.2)}
+/* Mode cards */
+.mode-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.mode-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 12px;cursor:pointer;transition:.13s;font-size:11px;font-weight:500;color:var(--text2)}
+.mode-card:hover{border-color:var(--border2)}
+.mode-card.on{background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.4);color:#a78bfa}
+/* History */
+.htable{width:100%;border-collapse:collapse;font-size:12px}
+.htable th{text-align:left;padding:7px 10px;font-size:10px;font-weight:600;color:var(--text3);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.06em}
+.htable td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.03)}
+.htable tr:hover td{background:var(--bg3)}
+/* Heatmap */
+.heatmap{display:grid;gap:2px;font-size:10px}
+.hm-cell{border-radius:3px;display:flex;align-items:center;justify-content:center;font-weight:500;transition:.2s;aspect-ratio:1;font-family:'DM Mono',monospace}
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+/* Toast */
+#toast{position:fixed;bottom:16px;right:16px;background:var(--bg3);border:1px solid var(--border2);color:var(--text1);font-size:12px;padding:8px 14px;border-radius:var(--radius);opacity:0;transition:.3s;pointer-events:none;z-index:999;max-width:260px}
+#toast.show{opacity:1}
+/* Keno grid */
+.keno-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:12px}
+.keno-cell{aspect-ratio:1;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;font-family:'DM Mono',monospace;cursor:default;border:1px solid var(--border);transition:.2s}
+/* Info box */
+.info-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:12px;font-size:12px;color:var(--text2);line-height:1.6}
+.info-box strong{color:var(--text1)}
+/* How to play */
+.how-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:12px}
+.how-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px}
+.how-card .step{font-size:10px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.how-card .title{font-size:12px;font-weight:600;color:var(--text1);margin-bottom:3px}
+.how-card .desc{font-size:11px;color:var(--text3);line-height:1.5}
 </style>
 </head>
 <body>
 
-<!-- Titlebar -->
 <div class="titlebar">
-  <svg class="titlebar-icon" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2">
-    <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-  </svg>
+  <div class="titlebar-logo">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+  </div>
   <span class="titlebar-title">MI Lottery Analytics</span>
   <span class="disclaimer-pill">⚠ For entertainment only — draws are random</span>
 </div>
@@ -221,669 +133,931 @@
 <div class="layout">
 
   <!-- Sidebar -->
-  <nav class="sidebar">
-    <div class="game-switch">
-      <button class="gs-btn on" id="gs-d3" onclick="setGame('d3')">Daily 3</button>
-      <button class="gs-btn"    id="gs-d4" onclick="setGame('d4')">Daily 4</button>
-    </div>
-
-    <div class="sidebar-section">Analysis</div>
-    <button class="nav-item active" onclick="nav('overview',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      Overview
-    </button>
-    <button class="nav-item" onclick="nav('frequency',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 4-4"/></svg>
-      Frequency
-    </button>
-    <button class="nav-item" onclick="nav('heatmap',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
-      Position map
-    </button>
-    <button class="nav-item" onclick="nav('sums',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20l4-16m4 16l4-16M3 8h18M3 16h18"/></svg>
-      Sum analysis
-    </button>
-
-    <div class="sidebar-section">Tools</div>
-    <button class="nav-item" onclick="nav('picks',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-      Smart picks
-    </button>
-    <button class="nav-item" onclick="nav('history',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3M3.05 11a9 9 0 1 0 .5-4.5"/><path d="M3 3v4h4"/></svg>
-      History
-    </button>
-    <button class="nav-item" onclick="nav('import',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      Import CSV
-    </button>
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section">Daily Games</div>
+    <!-- buttons injected by JS -->
+    <div class="sidebar-section">State Games</div>
+    <div class="sidebar-section">Multi-State</div>
   </nav>
 
   <!-- Main -->
-  <main class="main">
-
-    <!-- OVERVIEW -->
-    <div id="page-overview" class="page active">
-      <div class="page-hdr">
-        <h1 id="ov-title">Daily 3 Overview</h1>
-        <p id="ov-subtitle">Loading…</p>
-      </div>
-      <div class="grid4" id="ov-stats"></div>
-      <div class="grid2">
-        <div class="card" id="ov-hot"></div>
-        <div class="card" id="ov-cold"></div>
-      </div>
-      <div class="card" id="ov-topfreq"></div>
+  <div class="main">
+    <div class="tabs" id="tabs">
+      <button class="tab active" onclick="setTab('overview',this)">Overview</button>
+      <button class="tab" onclick="setTab('frequency',this)">Frequency</button>
+      <button class="tab" onclick="setTab('heatmap',this)">Position Map</button>
+      <button class="tab" onclick="setTab('picks',this)">Smart Picks</button>
+      <button class="tab" onclick="setTab('history',this)">History</button>
+      <button class="tab" onclick="setTab('howto',this)">How to Play</button>
     </div>
-
-    <!-- FREQUENCY -->
-    <div id="page-frequency" class="page">
-      <div class="page-hdr"><h1>Digit Frequency</h1><p id="freq-sub"></p></div>
-      <div class="card">
-        <div class="card-title">All digits — draw count</div>
-        <div style="position:relative;height:220px"><canvas id="freqChart" role="img" aria-label="Bar chart of digit frequency 0 through 9">Digit frequency data for digits 0-9.</canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Digit breakdown — ranked</div>
-        <div id="freq-bars"></div>
-      </div>
+    <div class="content">
+      <div id="page-overview"  class="page active"></div>
+      <div id="page-frequency" class="page"></div>
+      <div id="page-heatmap"   class="page"></div>
+      <div id="page-picks"     class="page"></div>
+      <div id="page-history"   class="page"></div>
+      <div id="page-howto"     class="page"></div>
     </div>
-
-    <!-- HEATMAP -->
-    <div id="page-heatmap" class="page">
-      <div class="page-hdr"><h1>Position Heatmap</h1><p>Which digits appear most in each position</p></div>
-      <div class="card">
-        <div class="card-title">Heatmap — digit × position (darker = more frequent)</div>
-        <div id="heatmap-grid" style="overflow-x:auto"></div>
-      </div>
-      <div class="grid4" id="heatmap-cards"></div>
-    </div>
-
-    <!-- SUMS -->
-    <div id="page-sums" class="page">
-      <div class="page-hdr"><h1>Sum Analysis</h1><p>Distribution of digit-sum totals across all draws</p></div>
-      <div class="card">
-        <div style="position:relative;height:260px"><canvas id="sumChart" role="img" aria-label="Area chart of digit sum distribution">Sum distribution data.</canvas></div>
-      </div>
-      <div class="grid3" id="sum-stats"></div>
-    </div>
-
-    <!-- SMART PICKS -->
-    <div id="page-picks" class="page">
-      <div class="page-hdr"><h1>Smart Picks</h1><p>Statistically weighted number suggestions</p></div>
-      <div class="card">
-        <div class="card-title">Algorithm</div>
-        <div class="mode-grid">
-          <div class="mode-card on" data-mode="weighted"    onclick="setMode(this)"><div class="mode-icon">⚖️</div><div class="mode-name">Weighted</div></div>
-          <div class="mode-card"   data-mode="hot"         onclick="setMode(this)"><div class="mode-icon">🔥</div><div class="mode-name">Hot digits</div></div>
-          <div class="mode-card"   data-mode="cold"        onclick="setMode(this)"><div class="mode-icon">🧊</div><div class="mode-name">Cold digits</div></div>
-          <div class="mode-card"   data-mode="balanced"    onclick="setMode(this)"><div class="mode-icon">🎯</div><div class="mode-name">Balanced</div></div>
-          <div class="mode-card"   data-mode="random"      onclick="setMode(this)"><div class="mode-icon">🎲</div><div class="mode-name">Random</div></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="ctrl-row">
-          <span class="ctrl-label">Picks:</span>
-          <input type="range" min="3" max="20" value="5" step="1" id="pickSlider" oninput="document.getElementById('pickNum').textContent=this.value">
-          <span id="pickNum" style="font-size:14px;font-weight:500;min-width:22px">5</span>
-          <button class="gen-btn" onclick="renderPicks()">↻ Generate</button>
-          <button class="export-btn" onclick="exportPicks()">↓ Export CSV</button>
-        </div>
-        <div id="picks-list"></div>
-      </div>
-    </div>
-
-    <!-- HISTORY -->
-    <div id="page-history" class="page">
-      <div class="page-hdr"><h1>Draw History</h1><p id="hist-sub"></p></div>
-      <div class="ctrl-row" style="margin-bottom:14px">
-        <span class="ctrl-label">Filter:</span>
-        <select id="hist-filter" onchange="renderHistory()" style="padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text1);font-size:13px">
-          <option value="all">All draws</option>
-          <option value="midday">Midday only</option>
-          <option value="evening">Evening only</option>
-        </select>
-        <span class="ctrl-label" style="margin-left:8px">Show:</span>
-        <select id="hist-count" onchange="renderHistory()" style="padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text1);font-size:13px">
-          <option value="20">20</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-          <option value="all">All</option>
-        </select>
-      </div>
-      <div class="card" style="padding:0;overflow:hidden">
-        <table class="htable" id="hist-table">
-          <thead><tr>
-            <th>#</th><th>Date</th><th>Time</th><th>Game</th>
-            <th>Number</th><th>Digits</th><th>Sum</th>
-          </tr></thead>
-          <tbody id="hist-body"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- IMPORT CSV -->
-    <div id="page-import" class="page">
-      <div class="page-hdr"><h1>Import CSV</h1><p>Load your own historical draw data</p></div>
-      <div class="card">
-        <div class="card-title">Expected format</div>
-        <div style="background:var(--bg0);border-radius:var(--radius-sm);padding:12px 16px;font-family:'DM Mono',monospace;font-size:12px;color:var(--text2);margin-bottom:12px">
-          draw_date,game_type,draw_time,winning_number<br>
-          2024-01-15,daily3,midday,347<br>
-          2024-01-15,daily4,evening,5621<br>
-          2024-01-16,daily3,midday,082
-        </div>
-        <p style="font-size:12px;color:var(--text3)">
-          Accepted game_type values: <code>daily3</code>, <code>daily4</code><br>
-          Accepted draw_time values: <code>midday</code>, <code>evening</code><br>
-          Date formats: YYYY-MM-DD or MM/DD/YYYY
-        </p>
-      </div>
-      <div class="card" id="drop-zone" style="border:2px dashed var(--border2);text-align:center;padding:40px;cursor:pointer;transition:.2s"
-        ondragover="event.preventDefault();this.style.borderColor='var(--brand)'"
-        ondragleave="this.style.borderColor='var(--border2)'"
-        ondrop="handleDrop(event)"
-        onclick="document.getElementById('csvFile').click()">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5" style="margin:0 auto 12px;display:block"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <p style="font-size:14px;font-weight:500;color:var(--text2);margin-bottom:4px">Drop CSV here or click to browse</p>
-        <p style="font-size:12px;color:var(--text3)">Supports .csv up to 50,000 rows</p>
-        <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleFile(this.files[0])">
-      </div>
-      <div id="import-result" style="display:none"></div>
-    </div>
-
-  </main>
+  </div>
 </div>
 
 <div id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-// ── RNG ────────────────────────────────────────────────────────────────────────
-const RNG = (seed) => {
-  let s = seed;
-  return () => { s=(s*1664525+1013904223)>>>0; return s/0xffffffff; };
-};
+// ─────────────────────────────────────────────────────────────────────────────
+// GAME DEFINITIONS
+// ─────────────────────────────────────────────────────────────────────────────
+const GAMES = [
+  // ── Daily ──
+  {
+    id:'daily3', name:'Daily 3', category:'daily',
+    color:'#22c55e', badge:'3-DIGIT',
+    draws:'Twice daily · 12:59 PM & 7:29 PM ET',
+    price:'$0.50–$2', jackpot:'$500',
+    desc:'Pick 3 digits (0–9). Play Straight, Box, or Straight/Box.',
+    type:'digit', digits:10, positions:3, posLabels:['Hundreds','Tens','Ones'],
+    pickRange:[0,9], pickCount:3, isDigit:true,
+    odds:'1 : 1,000', ticketInfo:'Wagers: $0.50, $1, $2 per play',
+    playTypes:['Straight (exact order)','Box (any order)','Straight/Box','Front/Back Pair','Split Pair'],
+    drawDays:'Daily',
+    steps:[
+      {s:'Pick',t:'Choose 3 digits',d:'Each from 0–9. Repeats allowed (e.g. 7-7-3).'},
+      {s:'Wager',t:'Set your bet',d:'$0.50 or $1 straight wins $250/$500. Box pays less but easier to hit.'},
+      {s:'Draw',t:'Two draws daily',d:'Midday 12:59 PM and Evening 7:29 PM ET every day.'},
+      {s:'Win',t:'Match to win',d:'Straight: exact order. Box: any order. Pair: match 2 of 3 digits.'},
+    ]
+  },
+  {
+    id:'daily4', name:'Daily 4', category:'daily',
+    color:'#3b82f6', badge:'4-DIGIT',
+    draws:'Twice daily · 12:59 PM & 7:29 PM ET',
+    price:'$0.50–$2', jackpot:'$5,000',
+    desc:'Pick 4 digits (0–9). Play Straight, Box, or combo plays.',
+    type:'digit', digits:10, positions:4, posLabels:['Thousands','Hundreds','Tens','Ones'],
+    pickRange:[0,9], pickCount:4, isDigit:true,
+    odds:'1 : 10,000', ticketInfo:'Straight $1 wins $5,000',
+    playTypes:['Straight','Box','Straight/Box','Front/Back Pair','Split Pair'],
+    drawDays:'Daily',
+    steps:[
+      {s:'Pick',t:'Choose 4 digits',d:'Each from 0–9. Any combination including repeats.'},
+      {s:'Wager',t:'Choose bet amount',d:'$0.50 or $1. Straight wins $2,500 or $5,000.'},
+      {s:'Draw',t:'Two draws daily',d:'Midday 12:59 PM and Evening 7:29 PM ET.'},
+      {s:'Win',t:'Match to win',d:'Straight: exact order. Box: any order (higher odds).'},
+    ]
+  },
+  // ── State ──
+  {
+    id:'fantasy5', name:'Fantasy 5', category:'state',
+    color:'#f59e0b', badge:'PICK 5',
+    draws:'Nightly · 7:29 PM ET',
+    price:'$1', jackpot:'Starts $100K',
+    desc:'Pick 5 numbers from 1–39. Draws every night.',
+    type:'lotto', min:1, max:39, pickCount:5, positions:5,
+    posLabels:['Ball 1','Ball 2','Ball 3','Ball 4','Ball 5'],
+    pickRange:[1,39],
+    odds:'1 : 575,757', ticketInfo:'$1 per play · EZmatch add-on available',
+    drawDays:'Daily (Nightly)',
+    steps:[
+      {s:'Pick',t:'Choose 5 numbers',d:'Select 5 different numbers from 1 to 39, or use Quick Pick.'},
+      {s:'Cost',t:'$1 per play',d:'Add EZmatch for $1 more — win up to $500 instantly.'},
+      {s:'Draw',t:'Every night',d:'Drawing at 7:29 PM ET daily. Match all 5 to win the jackpot.'},
+      {s:'Win',t:'Match 2–5',d:'Match 2 = free ticket. Match 3 = $5. Match 4 = $100. Match all 5 = Jackpot!'},
+    ]
+  },
+  {
+    id:'lotto47', name:'Lotto 47', category:'state',
+    color:'#8b5cf6', badge:'PICK 6',
+    draws:'Wed & Sat · 7:29 PM ET',
+    price:'$1', jackpot:'Starts $1M',
+    desc:'Pick 6 numbers from 1–47. Jackpot starts at $1 million.',
+    type:'lotto', min:1, max:47, pickCount:6, positions:6,
+    posLabels:['Ball 1','Ball 2','Ball 3','Ball 4','Ball 5','Ball 6'],
+    pickRange:[1,47],
+    odds:'1 : 10,737,573', ticketInfo:'$1 per play · Double Play & EZmatch available',
+    drawDays:'Wednesday & Saturday',
+    steps:[
+      {s:'Pick',t:'Choose 6 numbers',d:'Select 6 different numbers from 1 to 47.'},
+      {s:'Cost',t:'$1 per play',d:'Add Double Play ($1) for extra draw. EZmatch ($1) for instant prizes up to $500.'},
+      {s:'Draw',t:'Wed & Sat nights',d:'Drawings at 7:29 PM ET every Wednesday and Saturday.'},
+      {s:'Win',t:'Match 3–6',d:'Match 3 = $5. Match 4 = $100. Match 5 = $2,500+. Match 6 = Jackpot!'},
+    ]
+  },
+  {
+    id:'keno', name:'Keno (Daily)', category:'state',
+    color:'#ec4899', badge:'PICK 10',
+    draws:'Daily · Multiple times',
+    price:'$1', jackpot:'Up to $100K',
+    desc:'Pick up to 10 numbers from 1–80. 22 numbers are drawn.',
+    type:'keno', min:1, max:80, drawn:22, pickCount:10, positions:10,
+    posLabels:Array.from({length:10},(_,i)=>`Pick ${i+1}`),
+    pickRange:[1,80],
+    odds:'1 : 8,911,711 (10 of 10)', ticketInfo:'$1 per play · 22 numbers drawn (not 20)',
+    drawDays:'Daily',
+    steps:[
+      {s:'Pick',t:'Choose up to 10',d:'Select 1–10 different numbers from 1 to 80, or Quick Pick.'},
+      {s:'Cost',t:'$1 per play',d:'Fixed $1 wager per game entry.'},
+      {s:'Draw',t:'22 numbers drawn',d:'Unlike traditional keno (20), Michigan Daily Keno draws 22 numbers — better odds!'},
+      {s:'Win',t:'Match your picks',d:'Match 0 of 10 = refund. More matches = bigger prizes. Match 10 of 10 = jackpot!'},
+    ]
+  },
+  {
+    id:'cashpop', name:'Cash Pop', category:'state',
+    color:'#06b6d4', badge:'PICK 1–15',
+    draws:'Every few minutes · 5 AM – 2:59 AM',
+    price:'$1–$10', jackpot:'Up to $5,000',
+    desc:'Pick 1–15 numbers from 1–15. Draws every few minutes all day.',
+    type:'cashpop', min:1, max:15, pickCount:15, positions:1,
+    posLabels:['Number'],
+    pickRange:[1,15],
+    odds:'1 : 15 per number', ticketInfo:'Wager $1, $2, $5, or $10 per number · Launched April 2024',
+    drawDays:'Every few minutes (5:07 AM – 2:44 AM)',
+    steps:[
+      {s:'Pick',t:'Choose 1–15 numbers',d:'Select any numbers from 1 to 15. Pick all 15 to guarantee a win!'},
+      {s:'Wager',t:'$1, $2, $5, or $10',d:'Higher wager = higher prize. Prize amount shown on ticket at purchase.'},
+      {s:'Draw',t:'All day long',d:'8 draws per hour between 5 AM and 2:59 AM ET. New draws every ~7 minutes.'},
+      {s:'Win',t:'Match the drawn number',d:'1 number drawn. If it matches yours, you win your ticket prize amount!'},
+    ]
+  },
+  // ── Multi-state ──
+  {
+    id:'powerball', name:'Powerball', category:'multi',
+    color:'#ef4444', badge:'MULTI-STATE',
+    draws:'Mon, Wed, Sat · 10:59 PM ET',
+    price:'$2 ($3 w/ Power Play)', jackpot:'Starts $20M',
+    desc:'Pick 5 from 1–69 + Powerball 1–26. Huge jackpots.',
+    type:'lotto2', min:1, max:69, pickCount:5, bonusMin:1, bonusMax:26,
+    bonusName:'Powerball', bonusColor:'#ef4444',
+    positions:5, posLabels:['Ball 1','Ball 2','Ball 3','Ball 4','Ball 5'],
+    pickRange:[1,69],
+    odds:'1 : 292,201,338', ticketInfo:'$2 per play · Power Play multiplier $1 extra · Double Play available in MI',
+    drawDays:'Monday, Wednesday & Saturday',
+    steps:[
+      {s:'Pick',t:'5 white + 1 red',d:'Choose 5 numbers from 1–69, then 1 Powerball from 1–26.'},
+      {s:'Cost',t:'$2 per play',d:'Add Power Play ($1) to multiply non-jackpot prizes up to 10×. Double Play available in MI.'},
+      {s:'Draw',t:'3× per week',d:'Drawings at 10:59 PM ET on Monday, Wednesday, and Saturday.'},
+      {s:'Win',t:'Match to win',d:'Match Powerball only = $4. Match 5 white = $1M. Match all 6 = Jackpot!'},
+    ]
+  },
+  {
+    id:'megamillions', name:'Mega Millions', category:'multi',
+    color:'#3b82f6', badge:'MULTI-STATE',
+    draws:'Tue & Fri · 11:00 PM ET',
+    price:'$5 (incl. Megaplier)', jackpot:'Starts $50M',
+    desc:'Pick 5 from 1–70 + Mega Ball 1–24. Multiplier included.',
+    type:'lotto2', min:1, max:70, pickCount:5, bonusMin:1, bonusMax:24,
+    bonusName:'Mega Ball', bonusColor:'#3b82f6',
+    positions:5, posLabels:['Ball 1','Ball 2','Ball 3','Ball 4','Ball 5'],
+    pickRange:[1,70],
+    odds:'1 : 290,472,336', ticketInfo:'$5 per play · Megaplier now included · Jackpot starts $50M (updated 2025)',
+    drawDays:'Tuesday & Friday',
+    steps:[
+      {s:'Pick',t:'5 white + 1 gold',d:'Choose 5 numbers from 1–70, then 1 Mega Ball from 1–24.'},
+      {s:'Cost',t:'$5 per play',d:'Megaplier multiplier is now built in (as of 2025). No extra charge.'},
+      {s:'Draw',t:'2× per week',d:'Drawings at 11:00 PM ET on Tuesday and Friday nights.'},
+      {s:'Win',t:'Match to win',d:'Match Mega Ball only = $4. Match 5 white = $1M. Match all 6 = Jackpot!'},
+    ]
+  },
+  {
+    id:'millionaireforlife', name:'Millionaire for Life', category:'multi',
+    color:'#10b981', badge:'MULTI-STATE',
+    draws:'Daily · 11:15 PM ET',
+    price:'$5', jackpot:'$1M/year for LIFE',
+    desc:'Pick 5 from 1–58 + Millionaire Ball 1–5. Win $1M/year for life! Replaced Lucky for Life Feb 2026.',
+    type:'lotto2', min:1, max:58, pickCount:5, bonusMin:1, bonusMax:5,
+    bonusName:'Millionaire Ball', bonusColor:'#10b981',
+    positions:5, posLabels:['Ball 1','Ball 2','Ball 3','Ball 4','Ball 5'],
+    pickRange:[1,58],
+    odds:'1 : 40,770,560', ticketInfo:'$5 per play · Daily draws · Launched Feb 22, 2026 (replaced Lucky for Life)',
+    drawDays:'Daily (every night)',
+    steps:[
+      {s:'Pick',t:'5 white + 1 green',d:'Choose 5 numbers from 1–58, then 1 Millionaire Ball from 1–5.'},
+      {s:'Cost',t:'$5 per play',d:'One of the best odds among multi-state jackpot games.'},
+      {s:'Draw',t:'Every night',d:'Daily drawing at approximately 11:15 PM ET in Des Moines, Iowa.'},
+      {s:'Win',t:'Win $1M/year for life',d:'Match 5+MB = $1,000,000 a year for life. Match 5 white only = $25,000/year for life!'},
+    ]
+  },
+  {
+    id:'pokerlotto', name:'Poker Lotto', category:'state',
+    color:'#f97316', badge:'INSTANT+DRAW',
+    draws:'Nightly · 7:29 PM ET',
+    price:'$2', jackpot:'Up to $100K',
+    desc:'Quick Pick only. Instant poker hand + nightly draw for jackpot.',
+    type:'poker', min:1, max:52, pickCount:5, positions:5,
+    posLabels:['Card 1','Card 2','Card 3','Card 4','Card 5'],
+    pickRange:[1,52],
+    odds:'1 in ~649,740 (jackpot)', ticketInfo:'$2 per play · Quick Pick ONLY · 2-part game',
+    drawDays:'Daily (nightly)',
+    steps:[
+      {s:'Buy',t:'Quick Pick only',d:'No number selection — the terminal randomly selects 5 playing cards for your ticket.'},
+      {s:'Instant',t:'Win on the spot',d:'If your 5 cards form a winning poker hand (pair or better), win up to $5,000 instantly!'},
+      {s:'Draw',t:'Nightly draw',d:'Your ticket is also valid for the nightly draw at 7:29 PM ET for jackpot prizes.'},
+      {s:'Win',t:'Two ways to win',d:'Instant poker hand win + draw game. Royal Flush = jackpot up to $100,000.'},
+    ]
+  },
+];
 
-// ── Data generation ───────────────────────────────────────────────────────────
+const GAME_MAP = Object.fromEntries(GAMES.map(g=>[g.id,g]));
+const CATEGORY_LABEL = {daily:'Daily Games',state:'State Games',multi:'Multi-State'};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RNG & DATA GENERATION
+// ─────────────────────────────────────────────────────────────────────────────
+const RNG = seed => { let s=seed; return ()=>{ s=(s*1664525+1013904223)>>>0; return s/0xffffffff; }; };
+
 function genDraws(game, seed) {
-  const rng = RNG(seed), max = game==='d3'?1000:10000, len = game==='d3'?3:4;
-  const draws = [], base = new Date('2022-01-01');
-  for (let i = 0; i < 1000; i++) {
-    const d = new Date(base); d.setDate(base.getDate() + Math.floor(i/2));
+  const rng = RNG(seed);
+  const draws = [];
+  const base = new Date('2022-01-01');
+
+  for (let i = 0; i < (game.type==='cashpop'?500:600); i++) {
+    const dayOffset = Math.floor(i / (game.drawDays.includes('Daily')?2:game.drawDays.includes('3×')||game.drawDays.includes('Wed')?2:1));
+    const d = new Date(base); d.setDate(base.getDate() + dayOffset);
+    let numbers, bonus=null;
+
+    if (game.isDigit) {
+      numbers = Array.from({length:game.positions}, ()=>Math.floor(rng()*10));
+    } else if (game.type==='keno') {
+      const pool = Array.from({length:game.max},(_,i)=>i+1);
+      const shuffled = pool.sort(()=>rng()-0.5);
+      numbers = shuffled.slice(0, game.drawn || 22);
+    } else if (game.type==='cashpop') {
+      numbers = [Math.floor(rng()*15)+1];
+    } else if (game.type==='lotto2') {
+      const pool = Array.from({length:game.max},(_,i)=>i+game.min);
+      numbers = pool.sort(()=>rng()-0.5).slice(0,game.pickCount).sort((a,b)=>a-b);
+      bonus = Math.floor(rng()*(game.bonusMax-game.bonusMin+1))+game.bonusMin;
+    } else if (game.type==='poker') {
+      const suits = ['♠','♥','♦','♣'];
+      const ranks = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+      const deck = suits.flatMap(s=>ranks.map(r=>r+s));
+      deck.sort(()=>rng()-0.5);
+      numbers = deck.slice(0,5);
+    } else {
+      const pool = Array.from({length:game.max},(_,i)=>i+game.min);
+      numbers = pool.sort(()=>rng()-0.5).slice(0,game.pickCount).sort((a,b)=>a-b);
+    }
+
+    const times = game.drawDays.includes('daily')||game.drawDays.toLowerCase().includes('daily')
+      ? (i%2===0?'Midday':'Evening')
+      : (game.drawDays.includes('Mon')?['Mon','Wed','Sat'][i%3]:
+         game.drawDays.includes('Tue')?['Tue','Fri'][i%2]:
+         game.drawDays.includes('Wed')?['Wed','Sat'][i%2]:'Evening');
+
     draws.push({
       date: d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
-      iso: d.toISOString().slice(0,10),
-      time: i%2===0?'midday':'evening',
-      num: String(Math.floor(rng()*max)).padStart(len,'0'),
+      iso: d.toISOString().slice(0,10), time:times, numbers, bonus
     });
   }
   return draws.reverse();
 }
 
-function calcFreq(draws) {
-  const cnt = Array(10).fill(0);
-  for (const d of draws) for (const c of d.num) cnt[+c]++;
-  const total = cnt.reduce((a,b)=>a+b,0);
-  return cnt.map((c,i)=>({digit:i, count:c, pct:+((c/total)*100).toFixed(1)}));
+// Pre-generate all draws
+const DRAWS = {};
+GAMES.forEach((g,i) => { DRAWS[g.id] = genDraws(g, 42*(i+1)); });
+
+// Frequency analysis
+function calcFreq(game) {
+  const draws = DRAWS[game.id];
+  if (game.type==='poker') return [];
+  if (game.isDigit) {
+    const cnt = Array(10).fill(0);
+    draws.forEach(d=>d.numbers.forEach(n=>cnt[n]++));
+    const total = cnt.reduce((a,b)=>a+b,0);
+    return cnt.map((c,i)=>({num:i, count:c, pct:+((c/total)*100).toFixed(1)}));
+  }
+  const cnt = {};
+  const range = game.type==='cashpop'?15:game.type==='keno'?80:game.max;
+  for(let i=(game.min||0);i<=range;i++) cnt[i]=0;
+  draws.forEach(d=>d.numbers.forEach(n=>{ if(typeof n==='number') cnt[n]=(cnt[n]||0)+1; }));
+  const total = Object.values(cnt).reduce((a,b)=>a+b,0);
+  return Object.entries(cnt).map(([n,c])=>({num:+n, count:c, pct:+((c/total)*100).toFixed(2)}))
+    .sort((a,b)=>a.num-b.num);
 }
 
-function calcPos(draws, positions) {
-  return Array.from({length:positions},(_,p)=>{
-    const cnt = Array(10).fill(0);
-    for (const d of draws) cnt[+d.num[p]]++;
-    return cnt;
+function calcPosFreq(game) {
+  if (game.isDigit) {
+    return Array.from({length:game.positions},(_,p)=>{
+      const cnt=Array(10).fill(0);
+      DRAWS[game.id].forEach(d=>cnt[d.numbers[p]]++);
+      return cnt;
+    });
+  }
+  if (game.type==='lotto'||game.type==='lotto2') {
+    return Array.from({length:game.pickCount},(_,p)=>{
+      const cnt={};
+      DRAWS[game.id].forEach(d=>{ const n=d.numbers[p]; if(n!==undefined) cnt[n]=(cnt[n]||0)+1; });
+      return cnt;
+    });
+  }
+  return [];
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+let currentGame = GAMES[0];
+let currentTab  = 'overview';
+let pickMode    = 'weighted';
+let lastPicks   = [];
+let charts      = {};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SIDEBAR BUILD
+// ─────────────────────────────────────────────────────────────────────────────
+function buildSidebar() {
+  const sb = document.getElementById('sidebar');
+  sb.innerHTML = '';
+  const cats = ['daily','state','multi'];
+  cats.forEach(cat => {
+    const label = document.createElement('div');
+    label.className = 'sidebar-section';
+    label.textContent = CATEGORY_LABEL[cat];
+    sb.appendChild(label);
+    GAMES.filter(g=>g.category===cat).forEach(g => {
+      const btn = document.createElement('button');
+      btn.className = 'game-btn' + (g.id===currentGame.id?' active':'');
+      btn.id = 'gbtn-'+g.id;
+      btn.innerHTML = `<span class="game-dot" style="background:${g.color}"></span>
+        <span class="game-name">${g.name}</span>
+        <span class="game-type">${g.badge}</span>`;
+      btn.onclick = () => selectGame(g.id);
+      sb.appendChild(btn);
+    });
   });
 }
 
-// ── State ─────────────────────────────────────────────────────────────────────
-let game = 'd3';
-let DB = {
-  d3: genDraws('d3', 42),
-  d4: genDraws('d4', 99),
-};
-let importedDraws = { d3: [], d4: [] };
-let pickMode = 'weighted';
-let charts = {};
+function selectGame(id) {
+  currentGame = GAME_MAP[id];
+  document.querySelectorAll('.game-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('gbtn-'+id)?.classList.add('active');
+  renderCurrentTab();
+}
 
-function getDraws() { return [...(importedDraws[game].length ? importedDraws[game] : DB[game])]; }
-function getFreq()  { return calcFreq(getDraws()); }
-function getPosLen(){ return game==='d3'?3:4; }
-const POS_LABELS_D3 = ['Hundreds','Tens','Ones'];
-const POS_LABELS_D4 = ['Thousands','Hundreds','Tens','Ones'];
-function posLabels() { return game==='d3'?POS_LABELS_D3:POS_LABELS_D4; }
-
-// ── Navigation ────────────────────────────────────────────────────────────────
-function nav(page, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
+// ─────────────────────────────────────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────────────────────────────────────
+function setTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  renderPage(page);
+  renderCurrentTab();
 }
 
-function setGame(g) {
-  game = g;
-  document.getElementById('gs-d3').className = 'gs-btn'+(g==='d3'?' on':'');
-  document.getElementById('gs-d4').className = 'gs-btn'+(g==='d4'?' on':'');
-  const active = document.querySelector('.page.active');
-  if (active) renderPage(active.id.replace('page-',''));
+function renderCurrentTab() {
+  destroyCharts();
+  const fns = {overview:renderOverview,frequency:renderFrequency,heatmap:renderHeatmap,picks:renderPicks,history:renderHistory,howto:renderHowTo};
+  if(fns[currentTab]) fns[currentTab]();
 }
 
-function renderPage(page) {
-  const map = { overview: renderOverview, frequency: renderFrequency,
-    heatmap: renderHeatmap, sums: renderSums, picks: renderPicks,
-    history: renderHistory, import: ()=>{} };
-  if (map[page]) map[page]();
+function destroyCharts() {
+  Object.values(charts).forEach(c=>{try{c.destroy()}catch{}});
+  charts={};
 }
 
-// ── Toast ─────────────────────────────────────────────────────────────────────
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2500);
+// ─────────────────────────────────────────────────────────────────────────────
+// GAME HEADER HELPER
+// ─────────────────────────────────────────────────────────────────────────────
+function gameHeader(subtitle='') {
+  const g = currentGame;
+  return `<div class="game-hdr">
+    <div class="game-hdr-left">
+      <h2>${g.name}</h2>
+      <p>${subtitle || g.desc}</p>
+    </div>
+    <span class="game-badge" style="color:${g.color};border-color:${g.color}40;background:${g.color}15">${g.badge}</span>
+  </div>`;
 }
 
-// ── OVERVIEW ──────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// OVERVIEW
+// ─────────────────────────────────────────────────────────────────────────────
 function renderOverview() {
-  const draws = getDraws(), f = getFreq();
-  const sorted = [...f].sort((a,b)=>b.count-a.count);
-  const hot  = sorted.slice(0,5).map(x=>x.digit);
-  const cold = sorted.slice(-5).map(x=>x.digit).reverse();
-  const label = game==='d3'?'Daily 3':'Daily 4';
-  const recent = draws[0];
-  const sums = draws.map(d=>d.num.split('').reduce((a,c)=>a+parseInt(c),0));
-  const avgSum = (sums.reduce((a,b)=>a+b,0)/sums.length).toFixed(1);
-  const maxSum = Math.max(...sums), minSum = Math.min(...sums);
+  const g = currentGame;
+  const draws = DRAWS[g.id];
+  const el = document.getElementById('page-overview');
 
-  document.getElementById('ov-title').textContent = `${label} Overview`;
-  document.getElementById('ov-subtitle').textContent =
-    `${draws.length.toLocaleString()} draws · ${draws[draws.length-1].date} → ${draws[0].date}`;
+  // Special renders
+  if (g.type==='poker') { el.innerHTML = gameHeader() + pokerOverview(); return; }
+  if (g.type==='cashpop') { el.innerHTML = gameHeader() + cashpopOverview(); return; }
+  if (g.type==='keno') { el.innerHTML = gameHeader() + kenoOverview(); return; }
 
-  document.getElementById('ov-stats').innerHTML = `
-    <div class="stat"><div class="stat-label">Total draws</div><div class="stat-val">${draws.length.toLocaleString()}</div></div>
-    <div class="stat"><div class="stat-label">Latest draw</div><div class="stat-val mono">${recent.num}</div></div>
-    <div class="stat"><div class="stat-label">Avg digit sum</div><div class="stat-val">${avgSum}</div></div>
-    <div class="stat"><div class="stat-label">Sum range</div><div class="stat-val" style="font-size:16px">${minSum} – ${maxSum}</div></div>`;
+  const freq = calcFreq(g);
+  const sorted = [...freq].sort((a,b)=>b.count-a.count);
+  const hot = sorted.slice(0,g.isDigit?5:8).map(x=>x.num);
+  const cold = sorted.slice(-( g.isDigit?5:8)).map(x=>x.num).reverse();
+  const latest = draws[0];
+  const cols = Math.min(4, draws.length);
 
-  document.getElementById('ov-hot').innerHTML = `
-    <div class="card-title">🔥 Hot digits (most frequent)</div>
-    <div class="balls-row">${hot.map(d=>`<span class="ball ball-hot">${d}</span>`).join('')}</div>
-    <div style="font-size:12px;color:var(--text3)">Based on all ${draws.length} draws</div>`;
+  const statsHTML = `<div class="stats-row" style="grid-template-columns:repeat(4,1fr)">
+    <div class="stat"><div class="stat-label">Total Draws</div><div class="stat-val">${draws.length.toLocaleString()}</div></div>
+    <div class="stat"><div class="stat-label">Latest Draw</div><div class="stat-val mono" style="font-size:13px">${g.isDigit?latest.numbers.join('-'):latest.numbers.slice(0,3).join(' · ')+'…'}</div></div>
+    <div class="stat"><div class="stat-label">Draw Schedule</div><div class="stat-val" style="font-size:12px;padding-top:3px">${g.drawDays}</div></div>
+    <div class="stat"><div class="stat-label">Ticket Price</div><div class="stat-val" style="font-size:15px;padding-top:3px">${g.price}</div></div>
+  </div>`;
 
-  document.getElementById('ov-cold').innerHTML = `
-    <div class="card-title">🧊 Cold digits (least frequent)</div>
-    <div class="balls-row">${cold.map(d=>`<span class="ball ball-cold">${d}</span>`).join('')}</div>
-    <div style="font-size:12px;color:var(--text3)">Based on all ${draws.length} draws</div>`;
+  const maxC = sorted[0]?.count||1;
+  const hotColdHTML = `<div class="grid2">
+    <div class="card">
+      <div class="card-title">🔥 Hot Numbers</div>
+      <div class="balls-row">${hot.map(d=>`<span class="ball ball-hot${g.isDigit?' ball-sm':''}">${d}</span>`).join('')}</div>
+      <div style="font-size:11px;color:var(--text3)">Most frequent in ${draws.length} draws</div>
+    </div>
+    <div class="card">
+      <div class="card-title">🧊 Cold Numbers</div>
+      <div class="balls-row">${cold.map(d=>`<span class="ball ball-cold${g.isDigit?' ball-sm':''}">${d}</span>`).join('')}</div>
+      <div style="font-size:11px;color:var(--text3)">Least frequent in ${draws.length} draws</div>
+    </div>
+  </div>`;
 
-  const maxCount = sorted[0].count;
-  document.getElementById('ov-topfreq').innerHTML = `
-    <div class="card-title">Top digit frequency</div>
-    ${sorted.map(({digit,count,pct})=>`
+  const topFreqHTML = `<div class="card">
+    <div class="card-title">Top Numbers by Frequency</div>
+    ${sorted.slice(0,g.isDigit?10:12).map(({num,count,pct})=>`
       <div class="bar-row">
-        <span class="ball ball-n ball-sm">${digit}</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${(count/maxCount*100).toFixed(1)}%;background:var(--brand)"></div></div>
-        <span style="color:var(--text3);min-width:90px;text-align:right;font-size:12px">${count.toLocaleString()} <span style="opacity:.6">(${pct}%)</span></span>
-      </div>`).join('')}`;
+        <span class="ball ball-n ball-sm">${num}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${(count/maxC*100).toFixed(1)}%;background:${g.color}"></div></div>
+        <span style="color:var(--text3);min-width:80px;text-align:right;font-size:11px">${count.toLocaleString()} (${pct}%)</span>
+      </div>`).join('')}
+  </div>`;
+
+  // Bonus ball for lotto2
+  let bonusHTML = '';
+  if (g.type==='lotto2') {
+    const bCnt = {};
+    for(let i=g.bonusMin;i<=g.bonusMax;i++) bCnt[i]=0;
+    draws.forEach(d=>{ if(d.bonus) bCnt[d.bonus]=(bCnt[d.bonus]||0)+1; });
+    const bSorted = Object.entries(bCnt).map(([n,c])=>({n:+n,c})).sort((a,b)=>b.c-a.c);
+    const bMax = bSorted[0]?.c||1;
+    bonusHTML = `<div class="card">
+      <div class="card-title">🎯 ${g.bonusName} Frequency</div>
+      <div class="balls-row">${bSorted.slice(0,6).map(({n,c})=>`<span class="ball ball-special ball-sm">${n}</span>`).join('')}</div>
+      ${bSorted.slice(0,Math.min(8,g.bonusMax-g.bonusMin+1)).map(({n,c})=>`
+        <div class="bar-row">
+          <span class="ball ball-special ball-sm">${n}</span>
+          <div class="bar-track"><div class="bar-fill" style="width:${(c/bMax*100).toFixed(1)}%;background:${g.bonusColor}"></div></div>
+          <span style="color:var(--text3);font-size:11px;min-width:50px;text-align:right">${c}×</span>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  el.innerHTML = gameHeader() + statsHTML + hotColdHTML + topFreqHTML + bonusHTML;
 }
 
-// ── FREQUENCY ─────────────────────────────────────────────────────────────────
+function kenoOverview() {
+  const g = currentGame;
+  const draws = DRAWS[g.id];
+  const freq = calcFreq(g);
+  const sorted = [...freq].sort((a,b)=>b.count-a.count);
+  const hot = sorted.slice(0,10).map(x=>x.num);
+  const cold = sorted.slice(-10).map(x=>x.num);
+  const maxC = sorted[0]?.count||1;
+
+  // Heat grid 1–80
+  const numGrid = freq.map(({num,count})=>{
+    const t = count/maxC;
+    const r=Math.round(56+t*(239-56)), gr=Math.round(189+t*(68-189)), b=Math.round(248+t*(68-248));
+    return `<div class="keno-cell" style="background:rgba(${r},${gr},${b},0.7);color:${t>0.5?'#050508':'#f0f2ff'};border:none" title="${num}: ${count}×">${num}</div>`;
+  }).join('');
+
+  return `<div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat"><div class="stat-label">Total Draws</div><div class="stat-val">${draws.length.toLocaleString()}</div></div>
+    <div class="stat"><div class="stat-label">Numbers Drawn</div><div class="stat-val">22 of 80</div></div>
+    <div class="stat"><div class="stat-label">Ticket Price</div><div class="stat-val">$1</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><div class="card-title">🔥 Hottest 10</div><div class="balls-row">${hot.map(n=>`<span class="ball ball-hot ball-sm">${n}</span>`).join('')}</div></div>
+    <div class="card"><div class="card-title">🧊 Coldest 10</div><div class="balls-row">${cold.map(n=>`<span class="ball ball-cold ball-sm">${n}</span>`).join('')}</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Number Frequency Heatmap (1–80)</div>
+    <div class="keno-grid">${numGrid}</div>
+    <div style="font-size:11px;color:var(--text3)">Darker red = drawn more often · Darker blue = drawn less often</div>
+  </div>`;
+}
+
+function cashpopOverview() {
+  const g = currentGame;
+  const draws = DRAWS[g.id];
+  const cnt = Array(16).fill(0);
+  draws.forEach(d=>cnt[d.numbers[0]]++);
+  const total = draws.length;
+  const maxC = Math.max(...cnt.slice(1));
+  return `<div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat"><div class="stat-label">Total Draws</div><div class="stat-val">${draws.length}</div></div>
+    <div class="stat"><div class="stat-label">Number Range</div><div class="stat-val">1 – 15</div></div>
+    <div class="stat"><div class="stat-label">Draw Freq.</div><div class="stat-val" style="font-size:13px">~8/hr</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Number Frequency (1–15)</div>
+    ${Array.from({length:15},(_,i)=>{
+      const n=i+1, c=cnt[n], pct=((c/total)*100).toFixed(1);
+      return `<div class="bar-row">
+        <span class="ball ball-n ball-sm">${n}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${(c/maxC*100).toFixed(1)}%;background:${g.color}"></div></div>
+        <span style="color:var(--text3);font-size:11px;min-width:70px;text-align:right">${c}× (${pct}%)</span>
+      </div>`;
+    }).join('')}
+  </div>
+  <div class="info-box">
+    💡 <strong>Cash Pop tip:</strong> Playing all 15 numbers guarantees a win every draw. 
+    Wager $1 per number = $15 total, but prize values are randomized at ticket purchase. 
+    This game launched in Michigan in <strong>April 2024</strong>.
+  </div>`;
+}
+
+function pokerOverview() {
+  const draws = DRAWS[currentGame.id].slice(0,20);
+  const handCounts = {};
+  draws.forEach(d => {
+    const h = classifyHand(d.numbers);
+    handCounts[h]=(handCounts[h]||0)+1;
+  });
+  const rows = Object.entries(handCounts).sort((a,b)=>b[1]-a[1]).map(([h,c])=>
+    `<div class="bar-row"><span style="font-size:11px;color:var(--text1);min-width:130px">${h}</span>
+     <div class="bar-track"><div class="bar-fill" style="width:${(c/draws.length*100)}%;background:#f97316"></div></div>
+     <span style="color:var(--text3);font-size:11px">${c}×</span></div>`
+  ).join('');
+  const recents = draws.slice(0,6).map(d=>
+    `<div style="padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between">
+      <span style="color:var(--text2)">${d.date}</span>
+      <span style="font-family:monospace;color:var(--text1)">${d.numbers.join(' ')}</span>
+      <span style="color:#f97316;font-size:11px">${classifyHand(d.numbers)}</span>
+     </div>`
+  ).join('');
+  return `<div class="info-box">🃏 <strong>Poker Lotto</strong> is Quick Pick only — the terminal randomly chooses 5 playing cards. 
+    You win instantly if your cards form a poker hand. The same ticket enters the nightly draw for jackpot prizes. 
+    <strong>$2 per play.</strong></div>
+  <div class="card"><div class="card-title">Hand Distribution (last 20 draws)</div>${rows}</div>
+  <div class="card"><div class="card-title">Recent Draws</div>${recents}</div>`;
+}
+
+const HAND_RANKS = ['High Card','One Pair','Two Pair','Three of a Kind','Straight','Flush','Full House','Four of a Kind','Straight Flush','Royal Flush'];
+function classifyHand(cards) {
+  // Simple rank extraction (works on our generated card strings like "A♠")
+  const rankMap = {'A':14,'K':13,'Q':12,'J':11,'10':10};
+  const ranks = cards.map(c=>{ const r=c.replace(/[♠♥♦♣]/,''); return rankMap[r]||(parseInt(r)||0); }).sort((a,b)=>a-b);
+  const suits = cards.map(c=>c.slice(-1));
+  const counts = {};
+  ranks.forEach(r=>counts[r]=(counts[r]||0)+1);
+  const vals = Object.values(counts).sort((a,b)=>b-a);
+  const isFlush = suits.every(s=>s===suits[0]);
+  const isStraight = ranks[4]-ranks[0]===4 && Object.keys(counts).length===5;
+  if(isFlush&&isStraight&&ranks[0]===10) return 'Royal Flush';
+  if(isFlush&&isStraight) return 'Straight Flush';
+  if(vals[0]===4) return 'Four of a Kind';
+  if(vals[0]===3&&vals[1]===2) return 'Full House';
+  if(isFlush) return 'Flush';
+  if(isStraight) return 'Straight';
+  if(vals[0]===3) return 'Three of a Kind';
+  if(vals[0]===2&&vals[1]===2) return 'Two Pair';
+  if(vals[0]===2) return 'One Pair';
+  return 'High Card';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FREQUENCY
+// ─────────────────────────────────────────────────────────────────────────────
 function renderFrequency() {
-  const f = getFreq();
-  const draws = getDraws();
-  document.getElementById('freq-sub').textContent =
-    `Based on ${draws.length.toLocaleString()} draws`;
+  const g = currentGame;
+  const el = document.getElementById('page-frequency');
+  if (g.type==='poker') { el.innerHTML = gameHeader('Poker Lotto uses random cards — no frequency analysis available.'); return; }
 
-  // Destroy old chart
-  if (charts.freq) { charts.freq.destroy(); charts.freq = null; }
+  const freq = calcFreq(g);
+  const sorted = [...freq].sort((a,b)=>b.count-a.count);
+  const maxC = sorted[0]?.count||1;
 
-  const maxC = Math.max(...f.map(x=>x.count));
-  document.getElementById('freq-bars').innerHTML = f.map(({digit,count,pct})=>`
+  const barsHTML = sorted.map(({num,count,pct})=>`
     <div class="bar-row">
-      <span class="ball ball-n ball-sm">${digit}</span>
-      <div class="bar-track" style="height:8px">
-        <div class="bar-fill" style="width:${(count/maxC*100).toFixed(1)}%;background:${count>maxC*.95?'var(--hot)':count<maxC*.85?'var(--cold)':'var(--brand)'}"></div>
+      <span class="ball ball-n ball-sm" style="font-size:10px">${num}</span>
+      <div class="bar-track" style="height:6px">
+        <div class="bar-fill" style="width:${(count/maxC*100).toFixed(1)}%;background:${count===maxC?'#ef4444':count<maxC*.7?'#3b82f6':g.color}"></div>
       </div>
-      <span style="font-size:12px;color:var(--text3);min-width:100px;text-align:right">${count.toLocaleString()} (${pct}%)</span>
+      <span style="font-size:11px;color:var(--text3);min-width:90px;text-align:right">${count.toLocaleString()} (${pct}%)</span>
     </div>`).join('');
+
+  el.innerHTML = gameHeader(`Based on ${DRAWS[g.id].length} draws`) + `
+    <div class="card">
+      <div class="card-title">Frequency Chart</div>
+      <div style="position:relative;height:200px"><canvas id="freqChart" role="img" aria-label="Bar chart of number frequency">Frequency data.</canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">All Numbers Ranked</div>
+      ${barsHTML}
+    </div>`;
 
   setTimeout(()=>{
     const ctx = document.getElementById('freqChart');
-    if (!ctx) return;
-    charts.freq = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: f.map(x=>x.digit),
-        datasets:[{
-          label:'Count', data:f.map(x=>x.count),
-          backgroundColor: f.map(x=>
-            x.count===Math.max(...f.map(v=>v.count)) ? '#f97316' :
-            x.count===Math.min(...f.map(v=>v.count)) ? '#38bdf8' : '#334155'),
-          borderRadius:4,
-        }],
+    if(!ctx) return;
+    charts.freq = new Chart(ctx,{
+      type:'bar',
+      data:{
+        labels:freq.map(x=>x.num),
+        datasets:[{label:'Count',data:freq.map(x=>x.count),
+          backgroundColor:freq.map(x=>{
+            const sorted2=[...freq].sort((a,b)=>b.count-a.count);
+            if(x.num===sorted2[0].num) return '#ef4444';
+            if(x.num===sorted2[freq.length-1].num) return '#3b82f6';
+            return g.color+'cc';
+          }),borderRadius:3}]
       },
-      options:{
-        responsive:true, maintainAspectRatio:false,
-        plugins:{legend:{display:false}},
-        scales:{
-          x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b'}},
-          y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b'}},
-        },
-      },
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#4a4f70',font:{size:10}}},
+               y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#4a4f70',font:{size:10}}}}}
     });
-  }, 30);
+  },50);
 }
 
-// ── HEATMAP ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// HEATMAP
+// ─────────────────────────────────────────────────────────────────────────────
 function renderHeatmap() {
-  const draws = getDraws();
-  const positions = getPosLen();
-  const labels = posLabels();
-  const posData = calcPos(draws, positions);
+  const g = currentGame;
+  const el = document.getElementById('page-heatmap');
+  if (g.type==='poker'||g.type==='cashpop') {
+    el.innerHTML = gameHeader() + `<div class="info-box">Position heatmap is not applicable for ${g.name}.</div>`;
+    return;
+  }
+  if (g.type==='keno') { el.innerHTML = gameHeader() + kenoOverview(); return; }
 
-  // Find global max for scaling
-  const allVals = posData.flat();
-  const gMax = Math.max(...allVals), gMin = Math.min(...allVals);
+  const posData = calcPosFreq(g);
+  if (!posData.length) { el.innerHTML = gameHeader()+'<div class="info-box">No position data.</div>'; return; }
 
-  function heat(val) {
-    const t = (val-gMin)/(gMax-gMin);
-    const r = Math.round(56 + t*(249-56));
-    const g = Math.round(189 + t*(115-189));
-    const b = Math.round(248 + t*(22-248));
-    return `rgb(${r},${g},${b})`;
+  let heatHTML = '';
+  if (g.isDigit) {
+    // Grid: rows=positions, cols=digits 0-9
+    const allVals = posData.flat();
+    const gMax=Math.max(...allVals), gMin=Math.min(...allVals);
+    heatHTML = `<div class="heatmap" style="grid-template-columns:80px repeat(10,1fr)">
+      <div></div>${Array.from({length:10},(_,i)=>`<div style="text-align:center;font-size:10px;color:var(--text3);padding-bottom:4px">${i}</div>`).join('')}
+      ${posData.map((row,pi)=>`
+        <div style="font-size:10px;color:var(--text3);display:flex;align-items:center;padding-right:8px">${g.posLabels[pi]}</div>
+        ${row.map(val=>{
+          const t=(val-gMin)/(gMax-gMin||1);
+          const r=Math.round(56+t*(249-56)), gr=Math.round(189+t*(115-189)), b=Math.round(248+t*(22-248));
+          return `<div class="hm-cell" style="background:rgb(${r},${gr},${b});color:${t>0.5?'#050508':'#f0f2ff'}" title="${val}">${val}</div>`;
+        }).join('')}`).join('')}
+    </div>`;
+  } else {
+    // Lotto: show bar charts per position
+    heatHTML = `<div style="display:grid;grid-template-columns:repeat(${Math.min(3,g.pickCount)},1fr);gap:10px">
+      ${posData.slice(0,g.pickCount).map((cnt,pi)=>{
+        const entries = Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,8);
+        const maxV = entries[0]?.[1]||1;
+        return `<div class="card" style="margin:0">
+          <div class="card-title">${g.posLabels[pi]}</div>
+          ${entries.map(([n,c])=>`<div class="bar-row">
+            <span class="ball ball-n ball-sm" style="font-size:10px">${n}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${(c/maxV*100).toFixed(0)}%;background:${g.color}"></div></div>
+            <span style="font-size:10px;color:var(--text3);min-width:28px;text-align:right">${c}</span>
+          </div>`).join('')}
+        </div>`;
+      }).join('')}
+    </div>`;
   }
 
-  let html = '<div class="heatmap" style="min-width:320px">';
-  // Header row
-  html += '<div></div>';
-  for (let d=0;d<10;d++) html += `<div class="hm-header">${d}</div>`;
-  // Data rows
-  posData.forEach((row, pi) => {
-    const maxRow = Math.max(...row);
-    html += `<div class="hm-label">${labels[pi]}</div>`;
-    row.forEach(val => {
-      const t = (val-gMin)/(gMax-gMin);
-      const bg = heat(val);
-      const fg = t > 0.5 ? '#0a0e1a' : '#f1f5f9';
-      html += `<div class="hm-cell" style="background:${bg};color:${fg}" title="${val}">${val}</div>`;
-    });
-  });
-  html += '</div>';
-  document.getElementById('heatmap-grid').innerHTML = html;
-
-  // Per-position top-3 cards
-  document.getElementById('heatmap-cards').innerHTML = posData.map((row,pi)=>{
-    const top3 = row.map((c,d)=>({d,c})).sort((a,b)=>b.c-a.c).slice(0,3);
-    return `<div class="card">
-      <div class="card-title">${labels[pi]}</div>
-      ${top3.map(({d,c})=>`
-        <div class="bar-row">
-          <span class="ball ball-n ball-sm">${d}</span>
-          <div class="bar-track"><div class="bar-fill" style="width:${(c/Math.max(...row)*100).toFixed(0)}%;background:var(--brand)"></div></div>
-          <span style="font-size:12px;color:var(--text3);min-width:36px;text-align:right">${c}</span>
-        </div>`).join('')}
-    </div>`;
-  }).join('');
+  el.innerHTML = gameHeader('Which numbers appear most in each position') + `<div class="card"><div class="card-title">Position Heatmap</div>${heatHTML}</div>`;
 }
 
-// ── SUMS ──────────────────────────────────────────────────────────────────────
-function renderSums() {
-  const draws = getDraws();
-  const sumCounts = {};
-  draws.forEach(d => {
-    const s = d.num.split('').reduce((a,c)=>a+parseInt(c),0);
-    sumCounts[s] = (sumCounts[s]||0)+1;
-  });
-  const keys = Object.keys(sumCounts).map(Number).sort((a,b)=>a-b);
-  const vals = keys.map(k=>sumCounts[k]);
-  const total = vals.reduce((a,b)=>a+b,0);
-
-  const maxSum = keys[vals.indexOf(Math.max(...vals))];
-  const allSums = draws.map(d=>d.num.split('').reduce((a,c)=>a+parseInt(c),0));
-  const avg = (allSums.reduce((a,b)=>a+b,0)/allSums.length).toFixed(1);
-  const mid = keys[Math.floor(keys.length/2)];
-
-  document.getElementById('sum-stats').innerHTML = `
-    <div class="stat"><div class="stat-label">Most common sum</div><div class="stat-val">${maxSum}</div></div>
-    <div class="stat"><div class="stat-label">Average sum</div><div class="stat-val">${avg}</div></div>
-    <div class="stat"><div class="stat-label">Median sum</div><div class="stat-val">${mid}</div></div>`;
-
-  if (charts.sum) { charts.sum.destroy(); charts.sum = null; }
-
-  setTimeout(()=>{
-    const ctx = document.getElementById('sumChart');
-    if (!ctx) return;
-    charts.sum = new Chart(ctx, {
-      type:'line',
-      data:{
-        labels:keys,
-        datasets:[{
-          label:'Draws', data:vals, fill:true,
-          backgroundColor:'rgba(56,189,248,.1)',
-          borderColor:'#38bdf8', borderWidth:2,
-          tension:.4, pointRadius:2, pointBackgroundColor:'#38bdf8',
-        }],
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false,
-        plugins:{legend:{display:false}},
-        scales:{
-          x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b',maxTicksLimit:15}},
-          y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#64748b'}},
-        },
-      },
-    });
-  }, 30);
-}
-
-// ── SMART PICKS ───────────────────────────────────────────────────────────────
-let lastPicks = [];
-
+// ─────────────────────────────────────────────────────────────────────────────
+// SMART PICKS
+// ─────────────────────────────────────────────────────────────────────────────
 function setMode(el) {
   document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
-  pickMode = el.dataset.mode;
-  renderPicks();
+  pickMode=el.dataset.mode;
+  generatePicks();
 }
 
 function renderPicks() {
-  const count = parseInt(document.getElementById('pickSlider').value)||5;
-  const f = getFreq();
-  const len = getPosLen();
+  const g = currentGame;
+  const el = document.getElementById('page-picks');
+  if (g.type==='poker') {
+    el.innerHTML = gameHeader()+'<div class="info-box">🃏 Poker Lotto is <strong>Quick Pick only</strong> — the terminal selects your cards. No number selection is possible.</div>';
+    return;
+  }
+  el.innerHTML = gameHeader() + `
+    <div class="card">
+      <div class="card-title">Algorithm</div>
+      <div class="mode-grid">
+        <div class="mode-card on" data-mode="weighted" onclick="setMode(this)">⚖️ Weighted</div>
+        <div class="mode-card" data-mode="hot" onclick="setMode(this)">🔥 Hot Numbers</div>
+        <div class="mode-card" data-mode="cold" onclick="setMode(this)">🧊 Cold Numbers</div>
+        <div class="mode-card" data-mode="balanced" onclick="setMode(this)">🎯 Balanced</div>
+        <div class="mode-card" data-mode="random" onclick="setMode(this)">🎲 Random</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctrl-row">
+        <span class="ctrl-label">Picks:</span>
+        <input type="range" min="3" max="20" value="5" id="pickSlider" oninput="document.getElementById('pickNum').textContent=this.value">
+        <span id="pickNum" style="font-size:13px;font-weight:600;min-width:20px">5</span>
+        <button class="btn btn-primary" onclick="generatePicks()">↻ Generate</button>
+        <button class="btn btn-accent" onclick="exportPicks()">↓ Export CSV</button>
+      </div>
+      <div id="picks-list"></div>
+    </div>`;
+  generatePicks();
+}
+
+function generatePicks() {
+  const g = currentGame;
+  if (g.type==='poker') return;
+  const count = parseInt(document.getElementById('pickSlider')?.value||5);
+  const freq = calcFreq(g);
   const rng = RNG(Date.now()&0xffff);
 
-  function weightedPick(weights) {
-    const total = weights.reduce((a,b)=>a+b,0);
-    let r = rng()*total, cum=0;
-    for(let i=0;i<weights.length;i++){cum+=weights[i];if(r<=cum)return i;}
-    return 9;
-  }
-
   let weights;
-  if (pickMode==='hot')      weights = f.map(x=>x.pct*x.pct);
-  else if (pickMode==='cold') weights = f.map(x=>1/(x.pct+0.1));
-  else if (pickMode==='balanced') {
-    const avg = f.reduce((a,x)=>a+x.pct,0)/f.length;
-    weights = f.map(x=>1/(Math.abs(x.pct-avg)+0.5));
-  } else if (pickMode==='random') weights = Array(10).fill(1);
-  else weights = f.map(x=>x.pct); // weighted
+  if (pickMode==='hot') weights = freq.map(x=>Math.pow(x.pct,2));
+  else if (pickMode==='cold') weights = freq.map(x=>1/(x.pct+0.1));
+  else if (pickMode==='balanced') { const avg=freq.reduce((s,x)=>s+x.pct,0)/freq.length; weights=freq.map(x=>1/(Math.abs(x.pct-avg)+0.3)); }
+  else if (pickMode==='random') weights=freq.map(()=>1);
+  else weights=freq.map(x=>x.pct);
 
-  const picks=[], seen=new Set();
-  let attempts=0;
-  while(picks.length<count && attempts<1000){
-    attempts++;
-    const num = Array.from({length:len},()=>weightedPick(weights)).join('');
-    if(!seen.has(num)){seen.add(num);picks.push(num);}
+  function pick(exclude=[]) {
+    const pool = freq.filter(x=>!exclude.includes(x.num));
+    const w = weights.filter((_,i)=>!exclude.includes(freq[i].num));
+    const total=w.reduce((a,b)=>a+b,0);
+    let r=rng()*total, cum=0;
+    for(let i=0;i<w.length;i++){cum+=w[i];if(r<=cum)return pool[i].num;}
+    return pool[pool.length-1].num;
   }
 
-  lastPicks = picks;
-  const confLabels=['High','High','Moderate','Moderate','Low'];
-  const confClass =['conf-hi','conf-hi','conf-mid','conf-mid','conf-lo'];
+  const pickCount = g.type==='cashpop'?Math.min(count,15):g.pickCount;
+  const picks=[];
+  const seen=new Set();
+  let attempts=0;
 
-  document.getElementById('picks-list').innerHTML = picks.map((num,i)=>`
+  while(picks.length<count&&attempts<2000){
+    attempts++;
+    let nums;
+    if (g.isDigit) {
+      nums = Array.from({length:g.positions},()=>Math.floor(rng()*10));
+    } else if (g.type==='cashpop') {
+      nums = [Math.floor(rng()*15)+1];
+    } else {
+      const chosen=[];
+      for(let i=0;i<pickCount;i++) chosen.push(pick(chosen));
+      nums = [...chosen].sort((a,b)=>a-b);
+    }
+    let bonus=null;
+    if(g.type==='lotto2') bonus=Math.floor(rng()*(g.bonusMax-g.bonusMin+1))+g.bonusMin;
+    const key=nums.join('-')+(bonus!==null?'-B'+bonus:'');
+    if(!seen.has(key)){seen.add(key);picks.push({nums,bonus});}
+  }
+
+  lastPicks=picks;
+  const confLabels=['High','High','Moderate','Moderate','Low'];
+  const confClass=['conf-hi','conf-hi','conf-mid','conf-mid','conf-lo'];
+
+  const listEl=document.getElementById('picks-list');
+  if(!listEl)return;
+  listEl.innerHTML=picks.map(({nums,bonus},i)=>`
     <div class="pick-row">
-      <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:12px;color:var(--text3);min-width:18px">#${i+1}</span>
-        <div style="display:flex;gap:4px">
-          ${num.split('').map(d=>`<span class="ball ball-n ball-sm">${d}</span>`).join('')}
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-size:11px;color:var(--text3);min-width:18px">#${i+1}</span>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          ${nums.map(n=>`<span class="ball ball-n ball-sm">${n}</span>`).join('')}
+          ${bonus!==null?`<span style="font-size:10px;color:var(--text3);align-self:center">+</span>
+          <span class="ball ball-special ball-sm">${bonus}</span>`:''}
         </div>
-        <span style="font-family:'DM Mono',monospace;font-size:18px;font-weight:500;letter-spacing:3px">${num}</span>
+        ${g.isDigit?`<span style="font-family:'DM Mono',monospace;font-size:15px;font-weight:600;letter-spacing:2px;color:var(--text2)">${nums.join('')}</span>`:''}
       </div>
       <span class="conf ${confClass[Math.min(i,4)]}">${confLabels[Math.min(i,4)]}</span>
     </div>`).join('');
 }
 
 function exportPicks() {
-  if (!lastPicks.length) { toast('Generate picks first.'); return; }
-  const g = game==='d3'?'Daily 3':'Daily 4';
-  const date = new Date().toLocaleDateString();
-  let csv = `game,date,mode,pick,digit_sum\n`;
-  lastPicks.forEach(num=>{
-    const s = num.split('').reduce((a,c)=>a+parseInt(c),0);
-    csv += `${g},${date},${pickMode},${num},${s}\n`;
+  if(!lastPicks.length){toast('Generate picks first.');return;}
+  const g=currentGame;
+  let csv=`game,date,mode,pick,bonus\n`;
+  const date=new Date().toLocaleDateString();
+  lastPicks.forEach(({nums,bonus})=>{
+    csv+=`${g.name},${date},${pickMode},"${nums.join('-')}",${bonus??''}\n`;
   });
-  csv += `\nDISCLAIMER: Lottery draws are random. This app does NOT guarantee winnings.\n`;
-
-  if (window.electronAPI) {
-    window.electronAPI.saveCSV(csv, `mi-lottery-picks-${Date.now()}.csv`)
-      .then(r => r.ok ? toast(`Saved to ${r.filePath}`) : toast('Export cancelled.'));
+  csv+=`\nDISCLAIMER: Lottery draws are random. This app does NOT guarantee winnings.\n`;
+  if(window.electronAPI){
+    window.electronAPI.saveCSV(csv,`mi-${g.id}-picks-${Date.now()}.csv`)
+      .then(r=>r.ok?toast(`Saved!`):toast('Cancelled.'));
   } else {
-    const blob = new Blob([csv], {type:'text/csv'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'mi-lottery-picks.csv';
-    a.click();
-    toast('Picks exported!');
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+    a.download=`mi-${g.id}-picks.csv`;a.click();
+    toast('Exported!');
   }
 }
 
-// ── HISTORY ───────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// HISTORY
+// ─────────────────────────────────────────────────────────────────────────────
 function renderHistory() {
-  const draws = getDraws();
-  const filter = document.getElementById('hist-filter').value;
-  const countVal = document.getElementById('hist-count').value;
-  const g = game;
+  const g=currentGame;
+  const draws=DRAWS[g.id];
+  const el=document.getElementById('page-history');
+  const filter=document.getElementById('hist-filter')?.value||'all';
+  const countVal=document.getElementById('hist-count')?.value||'20';
 
-  let filtered = filter==='all' ? draws : draws.filter(d=>d.time===filter);
-  if (countVal!=='all') filtered = filtered.slice(0, parseInt(countVal));
+  let filtered=filter==='all'?draws:draws.filter(d=>d.time===filter||d.time?.includes(filter));
+  if(countVal!=='all') filtered=filtered.slice(0,parseInt(countVal));
 
-  document.getElementById('hist-sub').textContent =
-    `${filtered.length} draws shown · ${g.toUpperCase()}`;
-
-  document.getElementById('hist-body').innerHTML = filtered.map((d,i)=>`
-    <tr>
+  const rows=filtered.map((d,i)=>{
+    const numsHTML = g.type==='poker'
+      ? `<span style="font-family:monospace;font-size:12px">${d.numbers.join(' ')}</span>`
+      : d.numbers.map(n=>`<span class="ball ball-n" style="width:22px;height:22px;font-size:10px">${n}</span>`).join('');
+    const bonusHTML = d.bonus!=null
+      ? `<span class="ball ball-special" style="width:22px;height:22px;font-size:10px">${d.bonus}</span>`:'';
+    return `<tr>
       <td style="color:var(--text3)">${i+1}</td>
       <td style="color:var(--text2)">${d.date}</td>
-      <td><span class="badge ${d.time==='midday'?'badge-mid':'badge-eve'}">${d.time}</span></td>
-      <td><span class="badge ${g==='d3'?'badge-d3':'badge-d4'}">${g.toUpperCase()}</span></td>
-      <td style="font-family:'DM Mono',monospace;font-size:16px;font-weight:500;letter-spacing:3px">${d.num}</td>
-      <td>
-        <div style="display:flex;gap:3px">
-          ${d.num.split('').map(c=>`<span class="ball ball-n" style="width:24px;height:24px;font-size:11px">${c}</span>`).join('')}
-        </div>
-      </td>
-      <td style="color:var(--text2)">${d.num.split('').reduce((a,c)=>a+parseInt(c),0)}</td>
-    </tr>`).join('');
-}
+      <td style="color:var(--text3);font-size:11px">${d.time||''}</td>
+      <td><div style="display:flex;gap:3px;align-items:center;flex-wrap:wrap">${numsHTML}${bonusHTML}</div></td>
+      ${g.isDigit?`<td style="font-family:'DM Mono',monospace;font-size:14px;font-weight:600;letter-spacing:2px">${d.numbers.join('')}</td>`:''}
+    </tr>`;
+  }).join('');
 
-// ── CSV IMPORT ────────────────────────────────────────────────────────────────
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('drop-zone').style.borderColor = 'var(--border2)';
-  const file = e.dataTransfer.files[0];
-  if (file) handleFile(file);
-}
-
-function handleFile(file) {
-  if (!file || !file.name.endsWith('.csv')) { toast('Please drop a .csv file.'); return; }
-  const reader = new FileReader();
-  reader.onload = (e) => parseCSV(e.target.result, file.name);
-  reader.readAsText(file);
-}
-
-function parseCSV(text, filename) {
-  const lines = text.trim().split(/\r?\n/);
-  const headers = lines[0].toLowerCase().split(',').map(h=>h.trim());
-  const idx = {
-    date:   headers.indexOf('draw_date'),
-    game:   headers.indexOf('game_type'),
-    time:   headers.indexOf('draw_time'),
-    number: headers.indexOf('winning_number'),
-  };
-
-  if (Object.values(idx).some(v=>v===-1)) {
-    showImportResult({ok:false, error:'Missing columns. Need: draw_date, game_type, draw_time, winning_number'});
-    return;
-  }
-
-  const gameMap  = {daily3:'d3', d3:'d3', daily4:'d4', d4:'d4'};
-  const timeMap  = {midday:'midday', mid:'midday', noon:'midday', evening:'evening', eve:'evening', night:'evening'};
-  const newDraws = {d3:[], d4:[]};
-  let imported=0, skipped=0, errors=0;
-
-  for (let i=1;i<lines.length;i++) {
-    const cols = lines[i].split(',').map(c=>c.trim());
-    if (cols.length < 4) continue;
-    const g  = gameMap[cols[idx.game]?.toLowerCase()];
-    const t  = timeMap[cols[idx.time]?.toLowerCase()];
-    const dt = cols[idx.date];
-    const n  = cols[idx.number];
-    const expLen = g==='d3'?3:4;
-
-    if (!g||!t||!dt||!n) { errors++; continue; }
-    const num = n.replace(/\D/g,'').padStart(expLen,'0');
-    if (num.length!==expLen) { errors++; continue; }
-
-    const d = new Date(dt);
-    if (isNaN(d)) { errors++; continue; }
-
-    newDraws[g].push({
-      date: d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}),
-      iso: dt,
-      time: t,
-      num,
-    });
-    imported++;
-  }
-
-  // Sort newest-first
-  ['d3','d4'].forEach(g => newDraws[g].sort((a,b)=>b.iso.localeCompare(a.iso)));
-  importedDraws = newDraws;
-
-  showImportResult({ok:true, imported, errors, filename,
-    d3count:newDraws.d3.length, d4count:newDraws.d4.length});
-  toast(`Imported ${imported} draws from ${filename}`);
-}
-
-function showImportResult({ok, imported, errors, filename, d3count, d4count, error}) {
-  const el = document.getElementById('import-result');
-  el.style.display = 'block';
-  if (!ok) {
-    el.innerHTML = `<div class="card" style="border-color:rgba(239,68,68,.3)">
-      <div style="color:#f87171;font-weight:500;margin-bottom:4px">Import failed</div>
-      <div style="font-size:13px;color:var(--text3)">${error}</div>
-    </div>`;
-    return;
-  }
-  el.innerHTML = `<div class="card">
-    <div style="color:#4ade80;font-weight:500;margin-bottom:12px">✓ Import complete — ${filename}</div>
-    <div class="grid4">
-      <div class="stat"><div class="stat-label">Rows imported</div><div class="stat-val">${imported.toLocaleString()}</div></div>
-      <div class="stat"><div class="stat-label">Errors skipped</div><div class="stat-val">${errors}</div></div>
-      <div class="stat"><div class="stat-label">Daily 3 draws</div><div class="stat-val">${d3count.toLocaleString()}</div></div>
-      <div class="stat"><div class="stat-label">Daily 4 draws</div><div class="stat-val">${d4count.toLocaleString()}</div></div>
+  el.innerHTML = gameHeader(`${filtered.length} draws shown`) + `
+    <div class="ctrl-row">
+      <span class="ctrl-label">Filter:</span>
+      <select id="hist-filter" onchange="renderHistory()" style="padding:5px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text1);font-size:12px">
+        <option value="all">All draws</option>
+        ${g.drawDays.includes('daily')||g.drawDays.toLowerCase().includes('twice')?'<option value="Midday">Midday</option><option value="Evening">Evening</option>':''}
+      </select>
+      <span class="ctrl-label">Show:</span>
+      <select id="hist-count" onchange="renderHistory()" style="padding:5px 8px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text1);font-size:12px">
+        <option value="20">Last 20</option><option value="50">Last 50</option>
+        <option value="100">Last 100</option><option value="all">All</option>
+      </select>
     </div>
-    <p style="font-size:12px;color:var(--text3);margin-top:8px">Imported data is now active. Switch games above to explore.</p>
-  </div>`;
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="htable">
+        <thead><tr>
+          <th>#</th><th>Date</th><th>Draw</th><th>Numbers${g.type==='lotto2'?' + Bonus':''}</th>
+          ${g.isDigit?'<th>Full</th>':''}
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
 }
 
-// ── IPC from menu ─────────────────────────────────────────────────────────────
-if (window.electronAPI) {
+// ─────────────────────────────────────────────────────────────────────────────
+// HOW TO PLAY
+// ─────────────────────────────────────────────────────────────────────────────
+function renderHowTo() {
+  const g=currentGame;
+  const el=document.getElementById('page-howto');
+  const stepsHTML = g.steps.map((s,i)=>`
+    <div class="how-card">
+      <div class="step">Step ${i+1} · ${s.s}</div>
+      <div class="title">${s.t}</div>
+      <div class="desc">${s.d}</div>
+    </div>`).join('');
+
+  const playTypesHTML = g.playTypes
+    ? `<div class="card"><div class="card-title">Play Types</div>
+       ${g.playTypes.map(pt=>`<div style="padding:5px 0;border-bottom:1px solid var(--border);font-size:12px;color:var(--text2)">${pt}</div>`).join('')}
+       </div>` : '';
+
+  el.innerHTML = gameHeader() + `
+    <div class="info-box">
+      <strong>Draw Schedule:</strong> ${g.draws}<br>
+      <strong>Ticket Price:</strong> ${g.ticketInfo}<br>
+      <strong>Jackpot:</strong> ${g.jackpot}<br>
+      <strong>Odds of winning jackpot:</strong> ${g.odds}
+    </div>
+    <div class="how-grid">${stepsHTML}</div>
+    ${playTypesHTML}
+    <div class="card" style="border-color:rgba(245,158,11,.2)">
+      <div class="card-title" style="color:#f59e0b">⚠️ Responsible Play</div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.7">
+        Lottery draws are <strong style="color:var(--text2)">completely random</strong>. Past results have no influence on future draws. 
+        This tool is for statistical exploration and entertainment only.
+        Set a budget and never spend more than you can afford.
+        Problem gambling helpline: <strong style="color:var(--text2)">1-800-270-7117</strong>
+      </div>
+    </div>`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TOAST
+// ─────────────────────────────────────────────────────────────────────────────
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// IPC
+// ─────────────────────────────────────────────────────────────────────────────
+if(window.electronAPI){
   window.electronAPI.onMenuExportCSV(()=>exportPicks());
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────────────────────
+buildSidebar();
 renderOverview();
 </script>
 </body>
